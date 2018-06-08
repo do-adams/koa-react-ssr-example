@@ -1,5 +1,5 @@
 /**
- * This is custom made to abstract the required SSR extensions to the component
+ * This is custom made to abstract the required SSR extensions of the screen component
  */
 
 export function withSSR() {

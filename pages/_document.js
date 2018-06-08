@@ -4,9 +4,7 @@
 
 import React from "react";
 import Document, { Head, Main, NextScript } from "next/document"; // eslint-disable-line no-shadow
-import styled, { injectGlobal, ServerStyleSheet } from "styled-components";
-
-const Body = styled("div")``;
+import { injectGlobal, ServerStyleSheet } from "styled-components";
 
 // eslint-disable-next-line no-unused-expressions
 injectGlobal`
@@ -37,10 +35,8 @@ export default class MyDocument extends Document {
           <title>Koa + Next.js</title>
           {this.props.styleTags}
         </Head>
-        <Body>
-          <Main />
-          <NextScript />
-        </Body>
+        <Main />
+        <NextScript />
       </html>
     );
   }

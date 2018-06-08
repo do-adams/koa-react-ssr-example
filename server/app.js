@@ -14,8 +14,8 @@ const createRouter = require("./router");
 module.exports = async function createApp() {
   const app = new Koa();
 
+  // Add some assertions required in a production environment
   if (process.env.NODE_ENV === "production") {
-    // Add some assertions required in a production environment
     assert(process.env.SECRET_KEY, "Please set SECRET_KEY env variable.");
   }
   app.keys = [process.env.SECRET_KEY || "SECRET_KEY"];

@@ -1,4 +1,5 @@
 const Router = require("koa-router");
+const Boom = require('boom');
 
 module.exports = async function createRouter() {
   const router = new Router();
@@ -27,6 +28,10 @@ module.exports = async function createRouter() {
 
   router.post("/api/comments", async ctx => {
     ctx.session.comments = ctx.session.comments || [];
+
+    if (!ctx.request.body["comment"]) {
+      throw Boom.badData("Empty comments not allowed");
+    }
 
     const comment = {
       date: new Date(),
