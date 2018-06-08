@@ -21,7 +21,7 @@ This approach is sufficient for apps with a small number of views, however when 
 * The `bundle.js` file becomes large (over 3MB).
 * If using Redux, the boilerplate code for actions, reducers and containers gets larger, complex, and hard to maintain.
 * The routing, session and permission management can become messy.
-  * You must to check and maintain consistency of what the user can view and access. Furthermore, you must also remember to handle every possible error in the browser.
+  * Furthermore, you must also remember to handle every possible error in the browser.
 * Lack of server-side rendering leads to longer load times and worst SEO positioning.
 
 ### [Gatsby.js](http://gatsbyjs.org/)
