@@ -2,7 +2,7 @@
 
 One key advantage of using React.js versus string-based template engines, is that React.js allows us to write view logic in a declarative way, instead of just doing string replacement.
 
-Using a common JavaScript syntax and the paradigm behind "components" in React.js makes web development interesting again. Furthermore, having the ability to pre-process the view's source-code allows us to run some optimizations, ensure cross-compatibility and enjoy the advanced features of JavaScript.
+Using a common JavaScript syntax and the paradigm behind "components" in React.js makes web development an interesting engineering discipline. Furthermore, having the ability to pre-process the view's source-code allows us to run some optimizations, ensure cross-compatibility and enjoy the advanced features of JavaScript.
 
 The biggest problem with developing JavaScript-based webpages, is the huge size of the bundled (pre-compiled) file required to generate the final view. Even utilising the pre-processing optimizations is not sufficient as the source-code starts to get larger in size.
 
@@ -19,11 +19,10 @@ The simplest and most common way to begin creating a React.js application is usi
 This approach is sufficient for apps with a small number of views, however when they start having more features, permissions and dependencies, the following issues start to arise:
 
 * The `bundle.js` file becomes large (over 3MB).
-* If using Redux, the boilerplate code for actions, reducers and containers gets annoying and hard to maintain.
-* The routing, session and permission management* can become messy.
+* If using Redux, the boilerplate code for actions, reducers and containers gets larger, complex, and hard to maintain.
+* The routing, session and permission management can become messy.
+  * You must to check and maintain consistency of what the user can view and access. Furthermore, you must also remember to handle every possible error in the browser.
 * Lack of server-side rendering leads to longer load times and worst SEO positioning.
-
-*'session and permission management': you must to check and maintain consistency of what the user can view and access. Furthermore, you must also remember to handle every possible error in the browser.
 
 ### [Gatsby.js](http://gatsbyjs.org/)
 
@@ -61,11 +60,15 @@ At first sight Next.js looks like [create-react-app](https://github.com/facebook
 
 Next.js allows you to have all the configuration, optimization, server-side-rendering, importing and resolving of dependencies and more out-of-the-box. You can even use Redux, but you will see you don't need it when the source of truth is straight into the server.
 
+It's directory structure may be rigid (you can change the location of `/pages/`) but at the end has everything you need with good defaults.
+
 **We will be using Next.js for the rest of the post.**
+
+Also, we will be separating the server code from the client code, so we will avoid Node.js specific code inside React components and their `getInitialProps` function (see [Next.js docs](https://github.com/zeit/next.js/#fetching-data-and-component-lifecycle)).
 
 ## Setup [Koa](http://koajs.com/) and Next.js
 
-In an upcoming post I will explain why you should use [Koa.js](http://koajs.com/) and not other web frameworks like [Express.js](http://expressjs.com/) (the most popular Node.js framework). For now, I will cover......*****
+In an upcoming post I will explain why you should use [Koa.js](http://koajs.com/) and not other web frameworks like [Express.js](http://expressjs.com/) (the most popular Node.js framework). For now, I will cover how to use Koa, Next.js and styled-components together in order to use React.js as a view engine with re-hydration in the browser.
 
 **The code final of this example is published at [https://github.com/tokenfoundry/koa-react-ssr-example](https://github.com/tokenfoundry/koa-react-ssr-example).**
 
@@ -147,7 +150,7 @@ mkdir server public
 touch server/index.js server/app.js server/router.js
 ```
 
-**Spoiler alert:** instead of relying on [singletons](https://medium.com/@iaincollins/how-not-to-create-a-singleton-in-node-js-bd7fde5361f5), each file will expose a builder function. For better extensibility, the exposed function will be asynchronous (`async`). This has many advantages and is better for testing.
+**Spoiler alert:** instead of relying on [singletons](https://medium.com/@iaincollins/how-not-to-create-a-singleton-in-node-js-bd7fde5361f5), each file will expose a builder function. For better extensibility, the exposed function will be asynchronous (`async`). This has many advantages because we never know which step of the process of composing the parts of an application will be asynchronous (e.g. reading a file or fetching external data). This is also good for making testing easier.
 
 ```js
 // DO NOT USE SINGLETONS ❌
@@ -382,7 +385,7 @@ module.exports = async function setupSSR(app) {
   const router = new Router();
 
   router.get("/_next/*", async ctx => {
-    // Ups! we need this because Next.js sends the response prematurely
+    // Oops! we need this because Next.js sends the response prematurely
     ctx.respond = false;
     await handle(ctx.req, ctx.res);
   });
