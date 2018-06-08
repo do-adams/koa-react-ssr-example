@@ -1,82 +1,82 @@
 # Using React.js as a view engine in Koa
 
-One key advantage of using React.js versus string-based template engines is that React.js allow us to write view logic in a declarative way instead of just doing string replacement.
+One key advantage of using React.js versus string-based template engines, is that React.js allows us to write view logic in a declarative way, instead of just doing string replacement.
 
-Using a common JavaScript syntax and the paradigm behind "components" in React.js makes the web development interesting again. Also having the ability to pre-process the view's source-code we can run some optimizations, ensure cross-compatibility and enjoy advanced features of JavaScript.
+Using a common JavaScript syntax and the paradigm behind "components" in React.js makes web development interesting again. Furthermore, having the ability to pre-process the view's source-code allows us to run some optimizations, ensure cross-compatibility and enjoy the advanced features of JavaScript.
 
-The biggest problem of webpages with JavaScript-based is the huge size of the bundled (pre-compiled) file required to generate the final view. Even the pre-processing step is not enough when the source-code starts to get bigger and bigger.
+The biggest problem with developing JavaScript-based webpages, is the huge size of the bundled (pre-compiled) file required to generate the final view. Even utilising the pre-processing optimizations is not sufficient as the source-code starts to get larger in size.
 
-There is some alternatives to deal with this problem. The most complex ones allows the code to be required dynamically so the initial bundled source-code is small ([Webpack's require.resolveWeak feature](https://webpack.js.org/api/module-methods/#require-resolveweak)). Nonetheless Webpack becomes hard to maintain, optimize and understand.
+There are a number of possible solutions to help deal with this problem. The most complex ones allow the code to be required dynamically, so the initial bundled source-code is small ([Webpack's require.resolveWeak feature](https://webpack.js.org/api/module-methods/#require-resolveweak)). However Webpack easily becomes hard to maintain, optimize and understand.
 
-In the following blogpost we explore some alternatives and show how we structured [tokenfoundry.com](https://tokenfoundry.com).
+In the following blogpost we explore some alternative solutions, and show how we structured [tokenfoundry.com](https://tokenfoundry.com).
 
-## Alternatives
+## Alternative solutions
 
 ### [create-react-app](https://github.com/facebook/create-react-app)
 
-The most common and simplest web of starting a React.js application is using [create-react-app](https://github.com/facebook/create-react-app). If the app is more complex you can use a state-management library like [Redux](https://redux.js.org/) or [MobX](https://github.com/mobxjs/mobx) (or the new [context api](https://medium.com/dailyjs/reacts-%EF%B8%8F-new-context-api-70c9fe01596b)) and a routing solution like [React-Router](https://github.com/ReactTraining/react-router).
+The simplest and most common way to begin creating a React.js application is using [create-react-app](https://github.com/facebook/create-react-app). If the app is more complex, you can build on this framework and use a state-management library like [Redux](https://redux.js.org/) or [MobX](https://github.com/mobxjs/mobx) (or the new [context api](https://medium.com/dailyjs/reacts-%EF%B8%8F-new-context-api-70c9fe01596b)) and a routing solution like [React-Router](https://github.com/ReactTraining/react-router).
 
-This approach is sufficient for apps with small number of views. When it starts having more features, permissions and more and more dependencies the following issues appears:
+This approach is sufficient for apps with a small number of views, however when they start having more features, permissions and dependencies, the following issues start to arise:
 
-* The `bundle.js` file becomes really heavy (over 3MB).
+* The `bundle.js` file becomes large (over 3MB).
 * If using Redux, the boilerplate code for actions, reducers and containers gets annoying and hard to maintain.
-* Routing, session and permission management is a mess.
-* No server-side rendering so longer loading times and worst SEO positioning.
+* The routing, session and permission management* can become messy.
+* Lack of server-side rendering leads to longer load times and worst SEO positioning.
 
-By session and permission management I mean that you need to check and maintain consistency of what the user can view and access, also remember to handle every possible error in the browser.
+*'session and permission management': you must to check and maintain consistency of what the user can view and access. Furthermore, you must also remember to handle every possible error in the browser.
 
 ### [Gatsby.js](http://gatsbyjs.org/)
 
-This framework is awesome. It comes with a lot of usefully plugins and the final code is split per page, really optimized, pre-rendered to HTML for initial loads, does not requires a live server (just static hosting) and this is very developer-friendly.
+This framework is awesome. It comes with a large number of useful plug-ins, and the final code is well optimized, split per page, pre-rendered to HTML (for initial loads), and does not require a live server (just static hosting).
 
-Yet Gatsby.js [is not suited for very dynamic webpages](https://github.com/gatsbyjs/gatsby/issues/1538) (yes you can generate "dynamic" routes but adding new routes requires to rebuild the app). Also you still have a lot of Redux boilerplate all over your application.
+Despite this, Gatsby.js [is not suited for very dynamic webpages](https://github.com/gatsbyjs/gatsby/issues/1538). Yes you can generate "dynamic" routes, but adding new routes requires the app to be rebuilt. You also still have Redux boilerplates all over your application.
 
 ### Not using React at all
 
-How about getting rid of Redux and the complex session and permission management from the browser and do that job back in the server as we are used to do it? The database (the **real** single-source of truth, not Redux) is close to your web application, everything is hidden by default and you have control on what are you really sending to the browser and displaying to the user. We have been doing server-side-rendering for years before it was even a major concern.
+How about getting rid of Redux completely? Furthermore, you can then also get rid of the complex session and permission management from the browser, and do that job back in the server. The database (the **real** single-source of truth - not Redux) is left close to your web application, everything is hidden by default and you have control over what you send to display in the browser. We have been doing server-side rendering for years and it never used to be a major concern.
 
-But we are back to the common problems of dealing with overlapping CSS rules and ugly inlined Javascript logic, external scripts and the old fashioned syntax.
+Sadly, by removing Redux, we are back to the common problems of overlapping CSS rules, ugly inlined JavaScript logic, external scripts, and old-fashioned syntax.
 
-This also makes harder to re-use view elements since having logic as string is prone to error and less fun. You can use React.js for small parts of the application but requires a lot of Webpack configuration. Sharing logic is a little harder and connecting different components is feels _hacky_.
+It is also now harder to re-use view elements, since having logic as strings is prone to error (and _way less fun_.) You can use React.js for small parts of the application, but this requires a lot of Webpack configuration. Sharing logic is a little harder, and connecting different components feels _hacky_.
 
 ### Building your own SSR rendering app
 
-We wanted to keep the business logic and single source of truth in the server (the Ethereum Blockchain is the real source of truth but sometimes you need a centralized database as an intermediare).
+We want to keep the business logic and single source of truth in the server. The Ethereum Blockchain is the real source of truth, but sometimes you need a centralized database as an intermediary.
 
- We should use React.js only to generate views after all the logic is computed and validated by the server. The advantages of this approach are:
+Here we should use React.js only to generate views - after all, the logic is computed and validated by the server. The advantages of this approach are:
 
-* Keep the client-side Javascript code lightweight and only for views.
-* Use the technologies you are familiar with in the server.
-* Do not deal with two "single sources of truths" (database and Redux store).
+* It keeps the client-side JavaScript code lightweight, and only for views.
+* It allows you to use the technologies you are most familiar with in the server.
+* You do not have to deal with two "single sources of truths" (database and Redux store).
 
 #### react-loadable / react-universal-component
 
 This can be accomplished using [react-universal-component](https://github.com/faceyspacey/react-universal-component) or [react-loadable](https://github.com/jamiebuilds/react-loadable).
 
-Everything goes well until you start having to deal with complex Webpack setup. Having hot-reload is really hard and having separated environments for testing, development and production is very difficult even if you are a Webpack expert.
+Everything goes well, until you start having to deal with complex Webpack setup. Having hot-reload is really hard, and having separate environments for testing, development and production is difficult (even if you are a Webpack expert).
 
 ### [Next.js](https://github.com/zeit/next.js/)
 
-At first sight Next.js looks like [create-react-app](https://github.com/facebook/create-react-app) on steroids, but when you realize you can have a custom server this starts to get interesting.
+At first sight Next.js looks like [create-react-app](https://github.com/facebook/create-react-app) on steroids. However when you delve deeper and realize you can have a custom-built server, things start to get more interesting.
 
-Next.js allows you to have all the configuration, optimization, server-side-rendering, importing and resolving of dependencies and more out-of-the-box. You can even use Redux but you will see you don't need it when the source of truth is right into the server.
+Next.js allows you to have all the configuration, optimization, server-side-rendering, importing and resolving of dependencies and more out-of-the-box. You can even use Redux, but you will see you don't need it when the source of truth is straight into the server.
 
 **We will be using Next.js for the rest of the post.**
 
 ## Setup [Koa](http://koajs.com/) and Next.js
 
-In a upcoming post I will explain why [Koa.js](http://koajs.com/) and not other web framework like [Express.js](http://expressjs.com/) (the most popular Node.js framework).
+In an upcoming post I will explain why you should use [Koa.js](http://koajs.com/) and not other web frameworks like [Express.js](http://expressjs.com/) (the most popular Node.js framework). For now, I will cover......*****
 
 **The code final of this example is published at [https://github.com/tokenfoundry/koa-react-ssr-example](https://github.com/tokenfoundry/koa-react-ssr-example).**
 
-**Requisites**:
+**Prerequisites**:
 
-* [Node.js](http://nodejs.org/) 8 or newer
+* [Node.js](http://nodejs.org/) version 8 or above
 * [yarn](https://yarnpkg.com/)
 
 ### Getting started
 
-We will create the basic routes an application that allows the user to post a list of comments and store them privately in their session.
+We will create the basic routes for an application that allows the user to post a list of comments, and store them privately in their session.
 
 ```sh
 # Create root directory
@@ -89,7 +89,7 @@ yarn init -y
 # Use the gitignore from the example code
 curl https://raw.githubusercontent.com/tokenfoundry/koa-react-ssr-example/master/.gitignore -o .gitignore
 
-# Create some directories:
+# Create some directories
 mkdir server pages components public
 ```
 
@@ -102,7 +102,7 @@ curl https://raw.githubusercontent.com/tokenfoundry/koa-react-ssr-example/master
 curl https://raw.githubusercontent.com/tokenfoundry/koa-react-ssr-example/master/.eslintignore -o .eslintignore
 ```
 
-You `package.json` file should look like:
+Your `package.json` file should look like:
 
 ```json
 {
@@ -147,7 +147,7 @@ mkdir server public
 touch server/index.js server/app.js server/router.js
 ```
 
-**Spoiler alert:** instead of relaying on [singletons](https://medium.com/@iaincollins/how-not-to-create-a-singleton-in-node-js-bd7fde5361f5), each file will expose a builder function. For better for extensibility the exposed function will be asynchronous (`async`). This has advantages and is better for testing.
+**Spoiler alert:** instead of relying on [singletons](https://medium.com/@iaincollins/how-not-to-create-a-singleton-in-node-js-bd7fde5361f5), each file will expose a builder function. For better extensibility, the exposed function will be asynchronous (`async`). This has many advantages and is better for testing.
 
 ```js
 // DO NOT USE SINGLETONS ❌
@@ -173,9 +173,9 @@ module.exports = async function createApp(params) {
 };
 ```
 
-Koa is everything about middleware, nothing else. The main difference from Express.js is that **Koa's middleware are asynchronous.** See: https://strongloop.com/strongblog/async-error-handling-expressjs-es7-promises-generators/
+Koa is all about middleware, nothing else. Its main difference from Express.js, is that **Koa's middleware are asynchronous.** See: https://strongloop.com/strongblog/async-error-handling-expressjs-es7-promises-generators/
 
-This is the starting Koa app for us:
+This is our starting Koa app:
 
 ```js
 // server/app.js
@@ -220,7 +220,7 @@ module.exports = async function createApp() {
 Move the routing into it's own file. You can compose routers and use custom middleware per router/routes. I will not separate "controllers" or "handlers" from the route because **handlers are tightly coupled to the route and it's params**.
 
 If the URL, routes, paths, queryparams and HTTP Methods are the most important thing in the web, why separate them?
-You can still find a way to _unittest_ them, but integration test much are easier, real-case oriented and cleaner.
+You can still find a way to unit test them, but integration tests are real-case oriented and much cleaner.
 
 ```js
 // server/router.js
@@ -264,7 +264,7 @@ module.exports = async function createRouter() {
 };
 ```
 
-As you noticed, the app is based on asynchronous builder functions, so the final `app` object is returned as a result of a _Promise_. You can handle the `server/index.js` like this (until we get [top-level await](https://github.com/tc39/proposal-top-level-await)):
+As you may have noticed, the app is based on asynchronous builder functions, so the final `app` object is returned as a result of a _Promise_. You can handle the `server/index.js` like this (until we get [top-level await](https://github.com/tc39/proposal-top-level-await)):
 
 ```js
 /* eslint no-console:0 */
@@ -291,7 +291,7 @@ createApp()
 
 ### Next.js setup
 
-Ok let's use a real view engine. **Please note that we are only doing server-side-rendering (SSR), no client-side pre-fetching nor any specific Next.js feature besides `<head />` meta-tags handling and SSR.** Because we want to keep all the logic in the server.
+Ok let's try using a real view engine. **Please note that we are only doing server-side-rendering (SSR), no client-side pre-fetching nor any specific Next.js feature besides `<head />` meta-tag handling and SSR.** This is because we want to keep all the logic in the server.
 
 ```sh
 yarn add react react-dom prop-types next
@@ -316,7 +316,7 @@ Also create a `.babelrc` file with:
 }
 ```
 
-And `next.config.js` file with:
+And a `next.config.js` file with:
 
 ```js
 // next.config.js
@@ -341,7 +341,7 @@ await ctx.render({
 });
 ```
 
-Create the SSR setup file:
+Next create the SSR setup file:
 
 ```sh
 touch server/ssr.js
@@ -382,7 +382,7 @@ module.exports = async function setupSSR(app) {
   const router = new Router();
 
   router.get("/_next/*", async ctx => {
-    // Ups! we need because Next.js send the response prematurely
+    // Ups! we need this because Next.js sends the response prematurely
     ctx.respond = false;
     await handle(ctx.req, ctx.res);
   });
@@ -473,13 +473,13 @@ module.exports = async function createRouter() {
 };
 ```
 
-Also, create this small API client instance using [Axios](https://github.com/axios/axios/) (`yarn add axios`) to interact with our own api from `server/router.js`:
+Also, create this small API client instance using [Axios](https://github.com/axios/axios/) (`yarn add axios`) to interact with your own api from `server/router.js`:
 
 ```js
 // utils/api-client.js
 import axios from "axios";
 
-// Sorry! it's a singleton
+// Sorry! It's a singleton
 const client = axios.create({
   baseURL: "/",
   headers: {
@@ -636,7 +636,7 @@ class CommentsScreen extends Component {
 export default withSSR()(CommentsScreen);
 ```
 
-**Now we have a server-side renderer app with React.js re-hydration**
+**Now we have a server-side renderer app, with React.js re-hydration**
 
 ![02-next](./media/02-next.png)
 
@@ -685,7 +685,7 @@ Modify the `.babelrc` file to match:
 
 ```
 
-Just for example purposes, let's create some components:
+Just for the purpose of examples, let's create some components:
 
 ```js
 // components/Page.js
@@ -788,7 +788,7 @@ export default class MyDocument extends Document {
 
 ```
 
-We are doing this because we need to hook some styled-components custom actions before rendering like generating the stylesheets and running everything within the `ThemeProvider`.
+We are doing this because we need to hook some styled-component's custom actions before rendering - like generating the stylesheets and running everything within the `ThemeProvider`.
 
 ```js
 // pages/_app.js
@@ -830,9 +830,11 @@ curl https://raw.githubusercontent.com/tokenfoundry/koa-react-ssr-example/master
 
 ### Error handling
 
-How to handle 404 errors or any kinds of errors? There is a awesome module for HTTP errors from the [Hapi.js](https://github.com/hapijs) team called [Boom!](https://github.com/hapijs/boom).
+How to handle 404 errors or any kinds of errors:
 
-Check the source code of this example at [https://github.com/tokenfoundry/koa-react-ssr-example](https://github.com/tokenfoundry/koa-react-ssr-example) to see how to throw and handle errors gracefully like:
+There is an awesome module for HTTP errors from the [Hapi.js](https://github.com/hapijs) team called [Boom!](https://github.com/hapijs/boom).
+
+You can check the source code of this blog at [https://github.com/tokenfoundry/koa-react-ssr-example](https://github.com/tokenfoundry/koa-react-ssr-example) to see how to throw and handle errors gracefully. For example:
 
 ```js
 router.post("/api/comments", async ctx => {
