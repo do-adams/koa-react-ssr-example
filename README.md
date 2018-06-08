@@ -1,14 +1,14 @@
 # Using React.js as a view engine in Koa
 
-One key advantage of using React.js versus string-based template entines is that React.js allow us to write view logic in a declarative style instead of just string replacement.
+One key advantage of using React.js versus string-based template engines is that React.js allow us to write view logic in a declarative way instead of just doing string replacement.
 
-Using a common JavaScript syntax and the paradigm behind "components" in React.js makes the web development interesting again. Also having the option to pre-process the view code we can provide some optimizations, ensure cross-compatibility and enjoy advanced features of JavaScript.
+Using a common JavaScript syntax and the paradigm behind "components" in React.js makes the web development interesting again. Also having the ability to pre-process the view's source-code we can run some optimizations, ensure cross-compatibility and enjoy advanced features of JavaScript.
 
-The biggest problem that webpages with JavaScript-based views has is the huge Javascript file required to generate the final view. Even the pre-processing step is not enough when the code starts to get bigger and bigger.
+The biggest problem of webpages with JavaScript-based is the huge size of the bundled (pre-compiled) file required to generate the final view. Even the pre-processing step is not enough when the source-code starts to get bigger and bigger.
 
-There is some alternatives to deal with this problem. The most complex ones allows the code to be required dynamically so the initial bundled source-code is small ([Webpack's require.resolveWeak feature](https://webpack.js.org/api/module-methods/#require-resolveweak)).
+There is some alternatives to deal with this problem. The most complex ones allows the code to be required dynamically so the initial bundled source-code is small ([Webpack's require.resolveWeak feature](https://webpack.js.org/api/module-methods/#require-resolveweak)). Nonetheless Webpack becomes hard to maintain, optimize and understand.
 
-In the following blogpost we explore some alternatives and how we structured [tokenfoundry.com](https://tokenfoundry.com) the best way possible.
+In the following blogpost we explore some alternatives and show how we structured [tokenfoundry.com](https://tokenfoundry.com).
 
 ## Alternatives
 
@@ -16,9 +16,9 @@ In the following blogpost we explore some alternatives and how we structured [to
 
 The most common and simplest web of starting a React.js application is using [create-react-app](https://github.com/facebook/create-react-app). If the app is more complex you can use a state-management library like [Redux](https://redux.js.org/) or [MobX](https://github.com/mobxjs/mobx) (or the new [context api](https://medium.com/dailyjs/reacts-%EF%B8%8F-new-context-api-70c9fe01596b)) and a routing solution like [React-Router](https://github.com/ReactTraining/react-router).
 
-This approach is sufficient for apps with small number of views, when it starts having more features, permissions and more and more dependencies the following problems appears:
+This approach is sufficient for apps with small number of views. When it starts having more features, permissions and more and more dependencies the following issues appears:
 
-* The `bundle.js` file is really heavy (over 3MB).
+* The `bundle.js` file becomes really heavy (over 3MB).
 * If using Redux, the boilerplate code for actions, reducers and containers gets annoying and hard to maintain.
 * Routing, session and permission management is a mess.
 * No server-side rendering so longer loading times and worst SEO positioning.
@@ -27,23 +27,23 @@ By session and permission management I mean that you need to check and maintain 
 
 ### [Gatsby.js](http://gatsbyjs.org/)
 
-This framework is awesome. It comes with a lot of usefully plugins and the final code is split per page, really optimized, pre-rendered to HTML for initial loads and this is very developer-friendly.
+This framework is awesome. It comes with a lot of usefully plugins and the final code is split per page, really optimized, pre-rendered to HTML for initial loads, does not requires a live server (just static hosting) and this is very developer-friendly.
 
-But Gatsby.js [is not suited for really dynamic webpages](https://github.com/gatsbyjs/gatsby/issues/1538) (yes you can generate "dynamic" routes but adding new routes requires to rebuild the app). Also you still have that really log Redux related files all over your application.
+Yet Gatsby.js [is not suited for very dynamic webpages](https://github.com/gatsbyjs/gatsby/issues/1538) (yes you can generate "dynamic" routes but adding new routes requires to rebuild the app). Also you still have a lot of Redux boilerplate all over your application.
 
 ### Not using React at all
 
-How about getting rid of Redux and the complex session and permission management from the browser and do that job back in the server as we are used to do it. The database (the REAL single-source of truth, sorry Redux) is close to your web application, everything is hidden by default and you have control on what are you really sending to the browser and displaying to the user. We have been doing server-side-rendering for years before it was even a thing.
+How about getting rid of Redux and the complex session and permission management from the browser and do that job back in the server as we are used to do it? The database (the **real** single-source of truth, not Redux) is close to your web application, everything is hidden by default and you have control on what are you really sending to the browser and displaying to the user. We have been doing server-side-rendering for years before it was even a major concern.
 
-But we are back to the common problems of dealing with CSS and inline and ugly Javascript logic and external scripts and the old fashioned syntax.
+But we are back to the common problems of dealing with overlapping CSS rules and ugly inlined Javascript logic, external scripts and the old fashioned syntax.
 
-Also makes harder to re-use view elements since having logic as string is prone to error and less fun. You can use React.js for small parts of the application but needs a lot of Webpack configuration, sharing logic is a little harder and connecting different components is kind of hacky.
+This also makes harder to re-use view elements since having logic as string is prone to error and less fun. You can use React.js for small parts of the application but requires a lot of Webpack configuration. Sharing logic is a little harder and connecting different components is feels _hacky_.
 
 ### Building your own SSR rendering app
 
-We wanted to keep the business logic and single source of truth in the server (yes the Ethereum Blockchain is the real source of truth but sometimes you need a centralized database as an intermediare).
+We wanted to keep the business logic and single source of truth in the server (the Ethereum Blockchain is the real source of truth but sometimes you need a centralized database as an intermediare).
 
-So we can use React.js only to generate views after all the logic is computed and validated by the server. The advantages of this approach are:
+ We should use React.js only to generate views after all the logic is computed and validated by the server. The advantages of this approach are:
 
 * Keep the client-side Javascript code lightweight and only for views.
 * Use the technologies you are familiar with in the server.
@@ -53,15 +53,15 @@ So we can use React.js only to generate views after all the logic is computed an
 
 This can be accomplished using [react-universal-component](https://github.com/faceyspacey/react-universal-component) or [react-loadable](https://github.com/jamiebuilds/react-loadable).
 
-Everything goes well until you start having to deal with complex Webpack setup. Having hot-reload is really hard and having separated environments for testing, development and production is hard also.
+Everything goes well until you start having to deal with complex Webpack setup. Having hot-reload is really hard and having separated environments for testing, development and production is very difficult even if you are a Webpack expert.
 
 ### [Next.js](https://github.com/zeit/next.js/)
 
-The first sight Next.js looks like [create-react-app](https://github.com/facebook/create-react-app) on steroids, but when you realize you can have a custom server this starts to get interesting.
+At first sight Next.js looks like [create-react-app](https://github.com/facebook/create-react-app) on steroids, but when you realize you can have a custom server this starts to get interesting.
 
-Next.js allows you to have all the configuration, optimization, server-side-rendering, importing and resolving and more out-of-the-box. You can even use Redux but you will see you don't need it when the source of truth is right into the server.
+Next.js allows you to have all the configuration, optimization, server-side-rendering, importing and resolving of dependencies and more out-of-the-box. You can even use Redux but you will see you don't need it when the source of truth is right into the server.
 
-We will be using Next.js for the rest of the post.
+**We will be using Next.js for the rest of the post.**
 
 ## Setup [Koa](http://koajs.com/) and Next.js
 
@@ -143,8 +143,8 @@ yarn add koa koa-bodyparser koa-logger koa-router koa-session koa-static
 Create the starting files and folders:
 
 ```sh
+mkdir server public
 touch server/index.js server/app.js server/router.js
-mkdir public
 ```
 
 **Spoiler alert:** instead of relaying on [singletons](https://medium.com/@iaincollins/how-not-to-create-a-singleton-in-node-js-bd7fde5361f5), each file will expose a builder function. For better for extensibility the exposed function will be asynchronous (`async`). This has advantages and is better for testing.
@@ -291,7 +291,7 @@ createApp()
 
 ### Next.js setup
 
-Ok let's use a real view engine:
+Ok let's use a real view engine. **Please note that we are only doing server-side-rendering (SSR), no client-side pre-fetching nor any specific Next.js feature besides `<head />` meta-tags handling and SSR.** Because we want to keep all the logic in the server.
 
 ```sh
 yarn add react react-dom prop-types next
@@ -788,6 +788,8 @@ export default class MyDocument extends Document {
 
 ```
 
+We are doing this because we need to hook some styled-components custom actions before rendering like generating the stylesheets and running everything within the `ThemeProvider`.
+
 ```js
 // pages/_app.js
 
@@ -817,7 +819,7 @@ export default class MyApp extends App {
 
 Here is the official example if you need it: https://github.com/zeit/next.js/tree/canary/examples/with-styled-components
 
-Replace the `pages/` directory screens with the ones [from the example](https://github.com/tokenfoundry/koa-react-ssr-example/tree/master/pages) like:
+Replace the `pages/` directory screens with the ones [from the example](https://github.com/tokenfoundry/koa-react-ssr-example/tree/master/pages). You can use these bash commands:
 
 ```sh
 curl https://raw.githubusercontent.com/tokenfoundry/koa-react-ssr-example/master/pages/Home.js -o pages/Home.js
